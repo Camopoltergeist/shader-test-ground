@@ -47,6 +47,10 @@ module.exports = {
 				test: /\.(ogg|mp3|flac|wav)$/i,
 				type: 'asset/resource',
 			},
+			{
+				test: /\.glsl$/i,
+				type: 'asset/source'
+			}
 		]
 	},
 	stats: {
