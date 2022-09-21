@@ -1,0 +1,14 @@
+body{
+	margin: 0px;
+	overflow: hidden;
+	color: #CCC;
+	background-color: #000;
+}
+
+.fullscreen{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100vw;
+	height: 100vh;
+}

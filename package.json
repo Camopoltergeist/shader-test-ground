@@ -1,0 +1,31 @@
+{
+  "name": "shader-test-ground",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Camopoltergeist/shader-test-ground.git"
+  },
+  "author": "Camopoltergeist",
+  "license": "MIT",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/Camopoltergeist/shader-test-ground/issues"
+  },
+  "homepage": "https://github.com/Camopoltergeist/shader-test-ground#readme",
+  "dependencies": {
+    "three": "^0.144.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.144.0",
+    "css-loader": "^6.7.1",
+    "fork-ts-checker-webpack-plugin": "^7.2.13",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.4.1",
+    "typescript": "^4.8.3",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  }
+}
