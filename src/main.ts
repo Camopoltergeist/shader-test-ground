@@ -24,14 +24,12 @@ shaderMaterial.uniforms = {
 	screenSize: {value: [0, 0]}
 };
 
-const geometry = new PlaneGeometry(2, 2, 1, 1);
-geometry.setAttribute("screenPos", new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0]), 2));
-(geometry.attributes.screenPos as BufferAttribute).usage = DynamicDrawUsage;
+const quadGeometry = new PlaneGeometry(2, 2, 1, 1);
+quadGeometry.setAttribute("screenPos", new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0]), 2));
+(quadGeometry.attributes.screenPos as BufferAttribute).usage = DynamicDrawUsage;
 
-const fullscreenQuad = new Mesh(geometry, shaderMaterial);
+const fullscreenQuad = new Mesh(quadGeometry, shaderMaterial);
 scene.add(fullscreenQuad);
-
-console.log(fullscreenQuad);
 
 const camera = new OrthographicCamera(0, 1, 0, 1, 0, 1);
 
@@ -50,8 +48,10 @@ function step(time: DOMHighResTimeStamp){
 	requestAnimationFrame(step);
 
 	const screenSize = renderer.getSize(new Vector2());
-	(geometry.attributes.screenPos as BufferAttribute).set(new Float32Array([0, 0, screenSize.x, 0, 0, screenSize.y, screenSize.x, screenSize.y]));
-	(geometry.attributes.screenPos as BufferAttribute).needsUpdate = true;
+	
+	const screenPosAttrib = (quadGeometry.attributes.screenPos as BufferAttribute);
+	screenPosAttrib.set(new Float32Array([0, 0, screenSize.x, 0, 0, screenSize.y, screenSize.x, screenSize.y]));
+	screenPosAttrib.needsUpdate = true;
 
 	shaderMaterial.uniforms.time.value = time;
 	shaderMaterial.uniforms.screenSize.value = screenSize;
