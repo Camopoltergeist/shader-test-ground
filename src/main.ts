@@ -1,4 +1,4 @@
-import { Color, DoubleSide, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from "three";
+import { BufferAttribute, DynamicDrawUsage, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, Vector2, WebGLRenderer } from "three";
 import "./style.css";
 import vertexSource from "./vertex.glsl";
 import fragSource from "./fragment.glsl";
@@ -19,10 +19,19 @@ const renderer = new WebGLRenderer({
 const scene = new Scene();
 
 const shaderMaterial = new ShaderMaterial({vertexShader: vertexSource, fragmentShader: fragSource});
+shaderMaterial.uniforms = {
+	time: {value: 0},
+	screenSize: {value: [0, 0]}
+};
 
-const fullscreenQuad = new Mesh(new PlaneGeometry(2, 2, 1, 1), shaderMaterial);
-console.log(fullscreenQuad.geometry);
+const geometry = new PlaneGeometry(2, 2, 1, 1);
+geometry.setAttribute("screenPos", new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0]), 2));
+(geometry.attributes.screenPos as BufferAttribute).usage = DynamicDrawUsage;
+
+const fullscreenQuad = new Mesh(geometry, shaderMaterial);
 scene.add(fullscreenQuad);
+
+console.log(fullscreenQuad);
 
 const camera = new OrthographicCamera(0, 1, 0, 1, 0, 1);
 
@@ -39,6 +48,13 @@ resizeObserver.observe(mainCanvas);
 
 function step(time: DOMHighResTimeStamp){
 	requestAnimationFrame(step);
+
+	const screenSize = renderer.getSize(new Vector2());
+	(geometry.attributes.screenPos as BufferAttribute).set(new Float32Array([0, 0, screenSize.x, 0, 0, screenSize.y, screenSize.x, screenSize.y]));
+	(geometry.attributes.screenPos as BufferAttribute).needsUpdate = true;
+
+	shaderMaterial.uniforms.time.value = time;
+	shaderMaterial.uniforms.screenSize.value = screenSize;
 
 	renderer.clear();
 	renderer.render(scene, camera);
