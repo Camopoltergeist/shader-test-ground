@@ -1,4 +1,4 @@
-import { BufferAttribute, DynamicDrawUsage, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, Vector2, WebGLRenderer } from "three";
+import { BufferAttribute, DataArrayTexture, DynamicDrawUsage, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, Vector2, WebGLRenderer } from "three";
 import "./style.css";
 import vertexSource from "./vertex.glsl";
 import fragSource from "./fragment.glsl";
@@ -43,6 +43,52 @@ const resizeObserver = new ResizeObserver((entries, observer) => {
 });
 
 resizeObserver.observe(mainCanvas);
+
+let audioContext: AudioContext | null = null;
+let sourceNode: AudioBufferSourceNode | null = null;
+let analyzerNode: AnalyserNode | null = null;
+let gainNode: GainNode | null = null;
+
+const fileSelector = document.createElement("input");
+fileSelector.type = "file";
+fileSelector.addEventListener("input", async (e) => {
+	if(fileSelector.files === null){
+		return;
+	}
+
+	const file = fileSelector.files[0];
+	const fileBuffer = await file.arrayBuffer();
+	
+	if(audioContext === null){
+		audioContext = new AudioContext({
+			latencyHint: "interactive"
+		});
+
+		gainNode = audioContext.createGain();
+		gainNode.connect(audioContext.destination);
+		gainNode.gain.value = 0.6;
+
+		analyzerNode = audioContext.createAnalyser();
+		analyzerNode.connect(gainNode);
+	}
+
+	const audioBuffer = await audioContext.decodeAudioData(fileBuffer);
+
+	if(sourceNode !== null){
+		sourceNode.disconnect();
+		sourceNode = null;
+	}
+
+	sourceNode = audioContext.createBufferSource();
+	sourceNode.connect(analyzerNode as AnalyserNode);
+	sourceNode.loop = true;
+	sourceNode.buffer = audioBuffer;
+	sourceNode.start();
+});
+
+mainCanvas.addEventListener("click", (e) => {
+	fileSelector.click();
+});
 
 function step(time: DOMHighResTimeStamp){
 	requestAnimationFrame(step);
