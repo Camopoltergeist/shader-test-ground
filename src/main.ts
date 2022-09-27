@@ -1,4 +1,4 @@
-import { BufferAttribute, Color, DataArrayTexture, DataTexture, DoubleSide, DynamicDrawUsage, LinearFilter, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, RedFormat, Scene, ShaderMaterial, TextureLoader, UnsignedByteType, Vector2, WebGLRenderer } from "three";
+import { BufferAttribute, Color, DataArrayTexture, DataTexture, DoubleSide, DynamicDrawUsage, LinearFilter, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, RedFormat, RepeatWrapping, Scene, ShaderMaterial, TextureLoader, UnsignedByteType, Vector2, WebGLRenderer } from "three";
 import "./style.css";
 import vertexSource from "./vertex.glsl";
 import fragSource from "./fragment.glsl";
@@ -122,6 +122,8 @@ function step(time: DOMHighResTimeStamp){
 		dataTex.internalFormat = "R8";
 		dataTex.minFilter = LinearFilter;
 		dataTex.magFilter = LinearFilter;
+		dataTex.wrapS = RepeatWrapping;
+		dataTex.wrapT = RepeatWrapping;
 		dataTex.needsUpdate = true;
 
 		shaderMaterial.uniforms.fftTex.value = dataTex;
