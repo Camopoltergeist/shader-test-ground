@@ -18,7 +18,9 @@ void main(){
 	dist = step(dist, 1.f);
 
 	vec3 color = vec3(0, 0.5, 1);
+	float amp = texture2D(fftTex, vec2(v_UV.x / 2.55f, v_UV.y)).r;
+	float yDiff = screenSize.y / 2.f - v_ScreenPos.y;
+	yDiff /= 200.f;
 
-	// gl_FragColor = vec4(color * dist, 1);
-	gl_FragColor = texture2D(fftTex, vec2(v_UV.x / 2.f, v_UV.y));
+	gl_FragColor = vec4(color * (amp - yDiff), 1);
 }
