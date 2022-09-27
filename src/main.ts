@@ -1,4 +1,4 @@
-import { BufferAttribute, DataArrayTexture, DynamicDrawUsage, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, Vector2, WebGLRenderer } from "three";
+import { BufferAttribute, Color, DataArrayTexture, DataTexture, DoubleSide, DynamicDrawUsage, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, RedFormat, Scene, ShaderMaterial, TextureLoader, UnsignedByteType, Vector2, WebGLRenderer } from "three";
 import "./style.css";
 import vertexSource from "./vertex.glsl";
 import fragSource from "./fragment.glsl";
@@ -19,9 +19,21 @@ const renderer = new WebGLRenderer({
 const scene = new Scene();
 
 const shaderMaterial = new ShaderMaterial({vertexShader: vertexSource, fragmentShader: fragSource});
+
+const data = new Uint8Array(256);
+for(let i = 0; i < data.length; i++){
+	data[i] = 127;
+}
+
+const dataTex = new DataTexture(data, 256, 1);
+dataTex.format = RedFormat;
+dataTex.type = UnsignedByteType;
+dataTex.needsUpdate = true;
+
 shaderMaterial.uniforms = {
 	time: {value: 0},
-	screenSize: {value: [0, 0]}
+	screenSize: {value: [0, 0]},
+	fftTex: {value: dataTex}
 };
 
 const quadGeometry = new PlaneGeometry(2, 2, 1, 1);
@@ -101,6 +113,20 @@ function step(time: DOMHighResTimeStamp){
 
 	shaderMaterial.uniforms.time.value = time;
 	shaderMaterial.uniforms.screenSize.value = screenSize;
+	
+	if(analyzerNode !== null){
+		const fftData = new Uint8Array(analyzerNode.fftSize);
+		analyzerNode.getByteFrequencyData(fftData);
+		shaderMaterial.uniforms.fftTex.value.dispose();
+
+		const dataTex = new DataTexture(fftData, fftData.length, 1);
+		dataTex.type = UnsignedByteType;
+		dataTex.format = RedFormat;
+		dataTex.internalFormat = "R8";
+		dataTex.needsUpdate = true;
+
+		shaderMaterial.uniforms.fftTex.value = dataTex;
+	}
 
 	renderer.clear();
 	renderer.render(scene, camera);

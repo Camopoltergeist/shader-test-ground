@@ -5,6 +5,7 @@ in vec2 v_ScreenPos;
 
 uniform float time;
 uniform vec2 screenSize;
+uniform sampler2D fftTex;
 
 void main(){
 	vec2 posDiff = v_ScreenPos - (screenSize / 2.f);
@@ -18,5 +19,6 @@ void main(){
 
 	vec3 color = vec3(0, 0.5, 1);
 
-	gl_FragColor = vec4(color * dist, 1);
+	// gl_FragColor = vec4(color * dist, 1);
+	gl_FragColor = texture2D(fftTex, vec2(v_UV.x / 2.f, v_UV.y));
 }
